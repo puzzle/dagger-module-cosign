@@ -41,11 +41,11 @@ func (f *Cosign) Sign(
 	// Container image digest to sign
 	digest string,
 ) (string, error) {
-    cmd := []string{"cosign", "sign", digest, "--key", "env://COSIGN_PRIVATE_KEY"}
-    stdout, err := f.exec(ctx, privateKey, password, registryUsername, registryPassword, dockerConfig, cosignImage, cosignUser, nil, cmd)
-    if err != nil {
-        return nil, err
-    }
+	cmd := []string{"cosign", "sign", digest, "--key", "env://COSIGN_PRIVATE_KEY"}
+	stdout, err := f.exec(ctx, privateKey, password, registryUsername, registryPassword, dockerConfig, cosignImage, cosignUser, nil, cmd)
+	if err != nil {
+		return "", err
+	}
 	return stdout, nil
 }
 
