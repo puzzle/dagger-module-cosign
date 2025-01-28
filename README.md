@@ -1,4 +1,4 @@
-# daggerverse Helm Module
+# daggerverse Cosign Module
 
 [Dagger](https://dagger.io/) module for [daggerverse](https://daggerverse.dev/) providing [Cosign](https://github.com/sigstore/cosign) functionality.
 
