@@ -1,27 +1,54 @@
-# repository-template
-Dieses Repo dient als Beispiel und Template für unsere Open Source Repos, und zeigt auf, was wir alles von unseren Repos erwarten.
+# daggerverse Helm Module
 
-## Sprache
+[Dagger](https://dagger.io/) module for [daggerverse](https://daggerverse.dev/) providing [Cosign](https://github.com/sigstore/cosign) functionality.
 
-Für öffentliche Projekte sollte immer Englisch genutzt werden. Wir können in unserer Doku für uns selbst Deutsch nutzen,
-es ist aber einfacher, wenn von Anfang an alles in Englisch gehalten wird, und nicht gemischt wird bzw irgendwann übersetzt
-werden muss.
+The Dagger module is located in the [cosign](./cosign/) directory.
 
-## Github-Settings
+## usage
 
-### Branch Protection
-Setzt dies mindestens so, dass nur in `main` gemerged werden kann, wenn ein PR erstellt wurde und dieser mindestens 1 Approval hat - und
-dass auch Admins dies nicht bypassen dürfen. Wenn ihr direkt aus Github deployed, dann kann es sich auch lohnen, merges nur zuzulassen,
-wenn die Deployments und/oder CI Pipelines erfolgreich waren.
+Basic usage guide.
 
-## Dateien
+The [cosign](./cosign/) directory contains a [daggerverse](https://daggerverse.dev/) [Dagger](https://dagger.io/) module.
 
-* README - was macht dieses Repo, wie kann man es selber verwenden? Kann gesplittet werden, wenn es zu lang wird.
-* LICENSE - alle Repos müssen sauber lizenziert sein. Der OSS-Guide in Docs hat Tips, und die Branch-Members können auch helfen.
-* CODEOWNERS - wer ist Ansprechpartner? Wenn hier niemand eingetragen ist, oder nur noch Leute, die nicht bei Puzzle sind, dann wird's archiviert...
+Check the official Dagger Module documentation: https://docs.dagger.io/
 
-## Weitergedacht
+The [Dagger CLI](https://docs.dagger.io/cli) is needed.
 
-Wenn eine Community aufgebaut wird, wird auch ein Code Of Conduct notwendig. Für etwas wie ein TechLab z.B. ist das aber nicht notwendig.
+### functions
 
-OpenSSF Badges u.ä.
+List all functions of the module. This command is provided by the [Dagger CLI](https://docs.dagger.io/cli). 
+
+```bash
+dagger functions -m ./cosign/
+```
+
+The helm module is referenced locally.
+
+See the module [readme](./helm/README.md) or the method comments for more details.
+
+## development
+
+Basic development guide.
+
+### setup Dagger module
+
+Setup the Dagger module.
+
+Create the directory for the module and initialize it.
+
+```bash
+mkdir cosign/
+cd cosign/
+
+# initialize Dagger module
+dagger init
+dagger develop --sdk go --source cosign
+```
+
+## To Do
+
+- [ ] Add more tools
+- [ ] Add cache mounts
+- [ ] Add environment variables
+- [ ] Add more examples
+- [ ] Add tests
