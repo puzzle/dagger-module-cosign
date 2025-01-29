@@ -104,7 +104,7 @@ func (f *Cosign) Attest(
 	digest string,
 	// SBOM file
 	predicate *dagger.File,
-	// SBOM type
+	// SBOM type (slsaprovenance|slsaprovenance02|slsaprovenance1|link|spdx|spdxjson|cyclonedx|vuln|openvex|custom) or an URI
 	//+optional
 	//+default="spdxjson"
 	sbomType string,
@@ -139,7 +139,7 @@ func (f *Cosign) AttestKeyless(
 	digest string,
 	// SBOM file
 	predicate *dagger.File,
-	// SBOM type
+	// SBOM type (slsaprovenance|slsaprovenance02|slsaprovenance1|link|spdx|spdxjson|cyclonedx|vuln|openvex|custom) or an URI
 	//+optional
 	//+default="spdxjson"
 	sbomType string,
