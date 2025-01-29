@@ -24,7 +24,7 @@ func (f *Cosign) Sign(
 	// registry username
 	//+optional
 	registryUsername *string,
-	// name of the image
+	// registry password
 	//+optional
 	registryPassword *dagger.Secret,
 	// Docker config
@@ -44,7 +44,7 @@ func (f *Cosign) Sign(
 	return f.sign(ctx, privateKey, password, registryUsername, registryPassword, dockerConfig, cosignImage, cosignUser, digest)
 }
 
-// SignKeyless will run cosign sign from the image, as defined by the cosignImage
+// SignKeyless will run cosign sign (keyless) from the image, as defined by the cosignImage
 // parameter, to sign the given Container image digest
 //
 // See https://edu.chainguard.dev/open-source/sigstore/cosign/an-introduction-to-cosign/
@@ -53,7 +53,7 @@ func (f *Cosign) SignKeyless(
 	// registry username
 	//+optional
 	registryUsername *string,
-	// name of the image
+	// registry password
 	//+optional
 	registryPassword *dagger.Secret,
 	// Docker config
@@ -86,7 +86,7 @@ func (f *Cosign) Attest(
 	// registry username
 	//+optional
 	registryUsername *string,
-	// name of the image
+	// registry password
 	//+optional
 	registryPassword *dagger.Secret,
 	// Docker config
@@ -112,7 +112,7 @@ func (f *Cosign) Attest(
 	return f.attest(ctx, privateKey, password, registryUsername, registryPassword, dockerConfig, cosignImage, cosignUser, digest, predicate, sbomType)
 }
 
-// AttestKeyless will run cosign attest from the image, as defined by the cosignImage
+// AttestKeyless will run cosign attest (keyless) from the image, as defined by the cosignImage
 // parameter, to attest the SBOM of the given Container image digest
 //
 // See https://edu.chainguard.dev/open-source/sigstore/cosign/how-to-sign-an-sbom-with-cosign/
@@ -121,7 +121,7 @@ func (f *Cosign) AttestKeyless(
 	// registry username
 	//+optional
 	registryUsername *string,
-	// name of the image
+	// registry password
 	//+optional
 	registryPassword *dagger.Secret,
 	// Docker config
@@ -154,7 +154,7 @@ func (f *Cosign) Clean(
 	// registry username
 	//+optional
 	registryUsername *string,
-	// name of the image
+	// registry password
 	//+optional
 	registryPassword *dagger.Secret,
 	// Cosign container image
@@ -207,7 +207,7 @@ func (f *Cosign) sign(
 	// registry username
 	//+optional
 	registryUsername *string,
-	// name of the image
+	// registry password
 	//+optional
 	registryPassword *dagger.Secret,
 	// Docker config
@@ -249,7 +249,7 @@ func (f *Cosign) attest(
 	// registry username
 	//+optional
 	registryUsername *string,
-	// name of the image
+	// registry password
 	//+optional
 	registryPassword *dagger.Secret,
 	// Docker config
@@ -297,7 +297,7 @@ func (f *Cosign) exec(
 	// registry username
 	//+optional
 	registryUsername *string,
-	// name of the image
+	// registry password
 	//+optional
 	registryPassword *dagger.Secret,
 	// Docker config
