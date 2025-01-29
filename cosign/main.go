@@ -147,6 +147,55 @@ func (f *Cosign) AttestKeyless(
 	return f.attest(ctx, dagger.Secret{}, dagger.Secret{}, registryUsername, registryPassword, dockerConfig, cosignImage, cosignUser, digest, predicate, sbomType)
 }
 
+// Clean will run cosign clean from the image, as defined by the cosignImage
+// parameter, to clean the defined types of the given Container image digest
+func (f *Cosign) Clean(
+	ctx context.Context,
+	// registry username
+	//+optional
+	registryUsername *string,
+	// name of the image
+	//+optional
+	registryPassword *dagger.Secret,
+	// Cosign container image
+	//+optional
+	//+default="chainguard/cosign:latest"
+	cosignImage *string,
+	// Cosign container image user
+	//+optional
+	//+default="nonroot"
+	cosignUser *string,
+	// Container image digest to clean
+	digest string,
+	// Clean type (signature|attestation|all)
+	//+optional
+	//+default="all"
+	cleanType string,
+) (string, error) {
+	cmd := []string{"cosign", "clean", "--type", cleanType, digest, "--force"}
+    if registryUsername != nil && registryPassword != nil {
+        pwd, err := registryPassword.Plaintext(ctx)
+        if err != nil {
+            return "", err
+        }
+
+        cmd = append(
+            cmd,
+            "--registry-username",
+            *registryUsername,
+            "--registry-password",
+            pwd,
+        )
+    }
+
+    return dag.
+        Container().
+        From(*cosignImage).
+        WithUser(*cosignUser).
+        WithExec(cmd).
+        Stdout(ctx)
+}
+
 func (f *Cosign) sign(
 	ctx context.Context,
 	// Cosign private key (omit for keyless)
