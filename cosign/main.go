@@ -14,10 +14,140 @@ type Cosign struct{}
 // Sign will run cosign sign from the image, as defined by the cosignImage
 // parameter, to sign the given Container image digest
 //
-// Note: for keyless signing, omit the privateKey
-//
 // See https://edu.chainguard.dev/open-source/sigstore/cosign/an-introduction-to-cosign/
 func (f *Cosign) Sign(
+	ctx context.Context,
+	// Cosign private key
+	privateKey dagger.Secret,
+	// Cosign password
+	password dagger.Secret,
+	// registry username
+	//+optional
+	registryUsername *string,
+	// name of the image
+	//+optional
+	registryPassword *dagger.Secret,
+	// Docker config
+	//+optional
+	dockerConfig *dagger.File,
+	// Cosign container image
+	//+optional
+	//+default="chainguard/cosign:latest"
+	cosignImage *string,
+	// Cosign container image user
+	//+optional
+	//+default="nonroot"
+	cosignUser *string,
+	// Container image digest to sign
+	digest string,
+) (string, error) {
+	return f.sign(ctx, privateKey, password, registryUsername, registryPassword, dockerConfig, cosignImage, cosignUser, digest)
+}
+
+// SignKeyless will run cosign sign from the image, as defined by the cosignImage
+// parameter, to sign the given Container image digest
+//
+// See https://edu.chainguard.dev/open-source/sigstore/cosign/an-introduction-to-cosign/
+func (f *Cosign) SignKeyless(
+	ctx context.Context,
+	// registry username
+	//+optional
+	registryUsername *string,
+	// name of the image
+	//+optional
+	registryPassword *dagger.Secret,
+	// Docker config
+	//+optional
+	dockerConfig *dagger.File,
+	// Cosign container image
+	//+optional
+	//+default="chainguard/cosign:latest"
+	cosignImage *string,
+	// Cosign container image user
+	//+optional
+	//+default="nonroot"
+	cosignUser *string,
+	// Container image digest to sign
+	digest string,
+) (string, error) {
+	return f.sign(ctx, dagger.Secret{}, dagger.Secret{}, registryUsername, registryPassword, dockerConfig, cosignImage, cosignUser, digest)
+}
+
+// Attest will run cosign attest from the image, as defined by the cosignImage
+// parameter, to attest the SBOM of the given Container image digest
+//
+// See https://edu.chainguard.dev/open-source/sigstore/cosign/how-to-sign-an-sbom-with-cosign/
+func (f *Cosign) Attest(
+	ctx context.Context,
+	// Cosign private key
+	privateKey dagger.Secret,
+	// Cosign password
+	password dagger.Secret,
+	// registry username
+	//+optional
+	registryUsername *string,
+	// name of the image
+	//+optional
+	registryPassword *dagger.Secret,
+	// Docker config
+	//+optional
+	dockerConfig *dagger.File,
+	// Cosign container image
+	//+optional
+	//+default="chainguard/cosign:latest"
+	cosignImage *string,
+	// Cosign container image user
+	//+optional
+	//+default="nonroot"
+	cosignUser *string,
+	// Container image digest to attest
+	digest string,
+	// SBOM file
+	predicate *dagger.File,
+	// SBOM type
+	//+optional
+	//+default="spdxjson"
+	sbomType string,
+) (string, error) {
+	return f.attest(ctx, privateKey, password, registryUsername, registryPassword, dockerConfig, cosignImage, cosignUser, digest, predicate, sbomType)
+}
+
+// AttestKeyless will run cosign attest from the image, as defined by the cosignImage
+// parameter, to attest the SBOM of the given Container image digest
+//
+// See https://edu.chainguard.dev/open-source/sigstore/cosign/how-to-sign-an-sbom-with-cosign/
+func (f *Cosign) AttestKeyless(
+	ctx context.Context,
+	// registry username
+	//+optional
+	registryUsername *string,
+	// name of the image
+	//+optional
+	registryPassword *dagger.Secret,
+	// Docker config
+	//+optional
+	dockerConfig *dagger.File,
+	// Cosign container image
+	//+optional
+	//+default="chainguard/cosign:latest"
+	cosignImage *string,
+	// Cosign container image user
+	//+optional
+	//+default="nonroot"
+	cosignUser *string,
+	// Container image digest to attest
+	digest string,
+	// SBOM file
+	predicate *dagger.File,
+	// SBOM type
+	//+optional
+	//+default="spdxjson"
+	sbomType string,
+) (string, error) {
+	return f.attest(ctx, dagger.Secret{}, dagger.Secret{}, registryUsername, registryPassword, dockerConfig, cosignImage, cosignUser, digest, predicate, sbomType)
+}
+
+func (f *Cosign) sign(
 	ctx context.Context,
 	// Cosign private key (omit for keyless)
 	//+optional
@@ -59,13 +189,7 @@ func (f *Cosign) Sign(
 	return stdout, nil
 }
 
-// Attest will run cosign attest from the image, as defined by the cosignImage
-// parameter, to attest the SBOM of the given Container image digest
-//
-// Note: for keyless attestation, omit the privateKey
-//
-// See https://edu.chainguard.dev/open-source/sigstore/cosign/how-to-sign-an-sbom-with-cosign/
-func (f *Cosign) Attest(
+func (f *Cosign) attest(
 	ctx context.Context,
 	// Cosign private key (omit for keyless)
 	//+optional
