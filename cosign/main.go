@@ -173,27 +173,27 @@ func (f *Cosign) Clean(
 	cleanType string,
 ) (string, error) {
 	cmd := []string{"cosign", "clean", "--type", cleanType, digest, "--force"}
-	if registryUsername != nil && registryPassword != nil {
-		pwd, err := registryPassword.Plaintext(ctx)
-		if err != nil {
-			return "", err
-		}
+    if registryUsername != nil && registryPassword != nil {
+        pwd, err := registryPassword.Plaintext(ctx)
+        if err != nil {
+            return "", err
+        }
 
-		cmd = append(
-			cmd,
-			"--registry-username",
-			*registryUsername,
-			"--registry-password",
-			pwd,
-		)
-	}
+        cmd = append(
+            cmd,
+            "--registry-username",
+            *registryUsername,
+            "--registry-password",
+            pwd,
+        )
+    }
 
-	return dag.
-		Container().
-		From(*cosignImage).
-		WithUser(*cosignUser).
-		WithExec(cmd).
-		Stdout(ctx)
+    return dag.
+        Container().
+        From(*cosignImage).
+        WithUser(*cosignUser).
+        WithExec(cmd).
+        Stdout(ctx)
 }
 
 func (f *Cosign) sign(
