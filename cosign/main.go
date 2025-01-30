@@ -224,14 +224,16 @@ func (f *Cosign) sign(
 	// Container image digest to sign
 	digest string,
 ) (string, error) {
-	cmd := []string{}
-	userHome := fmt.Sprintf("/home/%s/", *cosignUser)
+	var keygen []string
+	cmd := []string{"cosign", "sign", digest, "--key"}
 	if privateKey == (dagger.Secret{}) {
-		cmd = []string{"sh", "-c", "COSIGN_EXPERIMENTAL=1", "cosign", "generate-key-pair", "--output-key-prefix", userHome + "cosign", "&&", "cosign", "sign", digest, "--key", userHome + "cosign.key"}
+		userHome := fmt.Sprintf("/home/%s/", *cosignUser)
+		keygen = []string{"sh", "-c", fmt.Sprintf("COSIGN_EXPERIMENTAL=1 cosign generate-key-pair --output-key-prefix %scosign", userHome)}
+		cmd = append(cmd, userHome+"cosign.key")
 	} else {
-		cmd = []string{"cosign", "sign", digest, "--key", "env://COSIGN_PRIVATE_KEY"}
+		cmd = append(cmd, "env://COSIGN_PRIVATE_KEY")
 	}
-	stdout, err := f.exec(ctx, privateKey, password, registryUsername, registryPassword, dockerConfig, cosignImage, cosignUser, nil, cmd)
+	stdout, err := f.exec(ctx, privateKey, password, registryUsername, registryPassword, dockerConfig, cosignImage, cosignUser, nil, keygen, cmd)
 	if err != nil {
 		return "", err
 	}
@@ -272,14 +274,16 @@ func (f *Cosign) attest(
 	//+default="spdxjson"
 	sbomType string,
 ) (string, error) {
-	cmd := []string{}
 	userHome := fmt.Sprintf("/home/%s/", *cosignUser)
+	var keygen []string
+	cmd := []string{"cosign", "attest", "--type", sbomType, "--predicate", userHome + "sbom.json", digest, "--key"}
 	if privateKey == (dagger.Secret{}) {
-		cmd = []string{"sh", "-c", "COSIGN_EXPERIMENTAL=1", "cosign", "generate-key-pair", "--output-key-prefix", userHome + "cosign", "&&", "cosign", "attest", "--type", sbomType, "--predicate", userHome + "sbom.json", digest, "--key", userHome + "cosign.key"}
+		keygen = []string{"sh", "-c", fmt.Sprintf("COSIGN_EXPERIMENTAL=1 cosign generate-key-pair --output-key-prefix %scosign", userHome)}
+		cmd = append(cmd, userHome+"cosign.key")
 	} else {
-		cmd = []string{"cosign", "attest", "--type", sbomType, "--predicate", userHome + "sbom.json", digest, "--key", "env://COSIGN_PRIVATE_KEY"}
+		cmd = append(cmd, "env://COSIGN_PRIVATE_KEY")
 	}
-	stdout, err := f.exec(ctx, privateKey, password, registryUsername, registryPassword, dockerConfig, cosignImage, cosignUser, predicate, cmd)
+	stdout, err := f.exec(ctx, privateKey, password, registryUsername, registryPassword, dockerConfig, cosignImage, cosignUser, predicate, keygen, cmd)
 	if err != nil {
 		return "", err
 	}
@@ -314,6 +318,8 @@ func (f *Cosign) exec(
 	// SBOM file
 	//+optional
 	predicate *dagger.File,
+	// Key generation command
+	keygen []string,
 	// Command to be executed
 	cmd []string,
 ) (string, error) {
@@ -360,6 +366,9 @@ func (f *Cosign) exec(
 			userHome+"sbom.json",
 			predicate,
 			dagger.ContainerWithMountedFileOpts{Owner: *cosignUser})
+	}
+	if keygen != nil {
+		cosign = cosign.WithExec(keygen)
 	}
 	return cosign.WithExec(cmd).Stdout(ctx)
 }
